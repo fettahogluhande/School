@@ -2,8 +2,9 @@ package com.hafnium.School.service;
 
 import com.hafnium.School.converter.SchoolConverter;
 import com.hafnium.School.dto.request.SchoolRequest;
-import com.hafnium.School.dto.response.SchoolCreateResponse;
+import com.hafnium.School.dto.response.SchoolResponse;
 import com.hafnium.School.exception.SchoolAlreadyExistsException;
+import com.hafnium.School.exception.SchoolNotFoundException;
 import com.hafnium.School.model.School;
 import com.hafnium.School.repository.SchoolRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +16,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SchoolService {
     private final SchoolRepository schoolRepository;
-    public SchoolCreateResponse createSchool(SchoolRequest request) {
+    public SchoolResponse createSchool(SchoolRequest request) {
         Optional<School> schoolByName = schoolRepository.findBySchoolName(request.getSchoolName());
         if(schoolByName.isPresent()){
             throw new SchoolAlreadyExistsException("School already exists with name:" +
                     request.getSchoolName());
         }
-        return SchoolConverter.converToSchoolCreateResponse
+        return SchoolConverter.converToSchoolResponse
                 (schoolRepository.save(SchoolConverter.converToSchool(request)));
-
     }
     public void deleteSchool(Long id) {
         schoolRepository.deleteById(id);
     }
+    public SchoolResponse getSchoolById(Long id) {
+        return SchoolConverter.converToSchoolResponse(findById(id));
+    }
+    private School findById(Long id) {
+        return schoolRepository.findById(id).orElseThrow(() -> new SchoolNotFoundException("School not found with id:" + id));
+    }
 
+    public void updateSchool(Long id,SchoolRequest request) {
+        School oldSchool = findById(id);
+        oldSchool.setSchoolName(request.getSchoolName());
+        schoolRepository.save(oldSchool);
+    }
 }
