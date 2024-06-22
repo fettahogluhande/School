@@ -4,11 +4,14 @@ import com.hafnium.School.dto.request.SchoolRequest;
 import com.hafnium.School.dto.response.SchoolResponse;
 import com.hafnium.School.exception.SchoolAlreadyExistsException;
 import com.hafnium.School.exception.SchoolNotFoundException;
+import com.hafnium.School.model.School;
 import com.hafnium.School.service.SchoolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/schools")
@@ -31,6 +34,10 @@ public class SchoolController {
     public void updateSchool(@PathVariable Long id, @RequestBody SchoolRequest request){
         schoolService.updateSchool(id, request);
 
+    }
+    @GetMapping
+    public List<School> getSchool(@RequestParam(required = false) String name){
+        return schoolService.getSchool(name);
     }
 
     @ExceptionHandler(SchoolAlreadyExistsException.class)
