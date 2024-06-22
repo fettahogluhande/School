@@ -20,4 +20,5 @@ public class SchoolController {
     public void deleteSchool(@PathVariable Long id){
         schoolService.deleteSchool(id);
     }
+
 }
